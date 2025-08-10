@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>שיבוץ לשבתות</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+    padding: 20px;
+  }
+  .logo {
+    max-width: 120px;
+    margin-bottom: 15px;
+  }
+  table {
+    border-collapse: collapse;
+    width: 90%;
+    margin: auto;
+    background-color: white;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  }
+  th {
+    background-color: #2d89ef;
+    color: white;
+    padding: 12px;
+    font-size: 18px;
+  }
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+  }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  button {
+    padding: 5px 10px;
+    margin: 2px;
+    background-color: #2d89ef;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  button:hover {
+    background-color: #1b5fab;
+  }
+  #formDiv {
+    margin: 20px auto;
+    width: 90%;
+    background: #fff;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  input {
+    padding: 5px;
+    margin: 5px;
+  }
+</style>
+</head>
+<body>
+
+<img src="ChatGPT Image Aug 10, 2025, 11_32_39 PM.png" alt="לוגו" class="logo">
+<h2>טבלת שיבוץ לשבתות הקרובות</h2>
+
+<div id="formDiv">
+  <input type="text" id="date" placeholder="תאריך / שבת">
+  <input type="text" id="names" placeholder="משובצים">
+  <input type="text" id="notes" placeholder="הערות">
+  <button onclick="addRow()">הוסף שורה</button>
+</div>
+
+<table id="scheduleTable">
+  <tr>
+    <th>תאריך / שבת</th>
+    <th>משובצים</th>
+    <th>הערות</th>
+    <th>ניהול</th>
+  </tr>
+</table>
+
+<script>
+let schedule = JSON.parse(localStorage.getItem("schedule")) || [
+  {date: "שבת הקרובה", names: "אריה לייב, שוורץ", notes: ""},
+  {date: "שבת לאחר מכן", names: "פוטולסקי", notes: ""},
+  {date: "שבת הבאה", names: "מוישי, ישראל מאיר", notes: "כולל לינה"}
+];
+
+function renderTable() {
+  const table = document.getElementById("scheduleTable");
+  table.innerHTML = `
+    <tr>
+      <th>תאריך / שבת</th>
+      <th>משובצים</th>
+      <th>הערות</th>
+      <th>ניהול</th>
+    </tr>
+  `;
+  schedule.forEach((row, index) => {
+    table.innerHTML += `
+      <tr>
+        <td>${row.date}</td>
+        <td>${row.names}</td>
+        <td>${row.notes}</td>
+        <td>
+          <button onclick="editRow(${index})">ערוך</button>
+          <button onclick="deleteRow(${index})">מחק</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function addRow() {
+  const date = document.getElementById("date").value;
+  const names = document.getElementById("names").value;
+  const notes = document.getElementById("notes").value;
+  if (!date || !names) return alert("חובה למלא תאריך ומשובצים!");
+  schedule.push({date, names, notes});
+  saveData();
+  renderTable();
+}
+
+function editRow(index) {
+  const newDate = prompt("עדכן תאריך / שבת:", schedule[index].date);
+  const newNames = prompt("עדכן משובצים:", schedule[index].names);
+  const newNotes = prompt("עדכן הערות:", schedule[index].notes);
+  if (newDate && newNames !== null) {
+    schedule[index] = {date: newDate, names: newNames, notes: newNotes};
+    saveData();
+    renderTable();
+  }
+}
+
+function deleteRow(index) {
+  if (confirm("האם אתה בטוח שברצונך למחוק שורה זו?")) {
+    schedule.splice(index, 1);
+    saveData();
+    renderTable();
+  }
+}
+
+function saveData() {
+  localStorage.setItem("schedule", JSON.stringify(schedule));
+}
+
+renderTable();
+</script>
+
+</body>
+</html>
